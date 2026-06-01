@@ -13,6 +13,8 @@ public class InputReader : ScriptableObject, IPlayerActions
     public event UnityAction<Vector2, bool> Look = delegate { };
     public event UnityAction EnableMouseControlCamera = delegate { };
     public event UnityAction DisableMouseControlCamera = delegate { };
+    public event UnityAction<bool> Aim = delegate { };
+    public event UnityAction<bool> Fire = delegate { };
 
     public Vector3 Direction => _inputActions.Player.Move.ReadValue<Vector2>();
 
@@ -32,12 +34,12 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public void OnFire(InputAction.CallbackContext context)
     {
-
+        Fire?.Invoke(context.performed);
     }
 
     public void OnLook(InputAction.CallbackContext context)
     {
-        Look?.Invoke(context.ReadValue<Vector2>(), context);
+        Look?.Invoke(context.ReadValue<Vector2>(), IsDeviceMouse(context));
     }
 
     public bool IsDeviceMouse(InputAction.CallbackContext context) => context.control.device.name == "Mouse";
@@ -58,5 +60,10 @@ public class InputReader : ScriptableObject, IPlayerActions
     public void OnMove(InputAction.CallbackContext context)
     {
         Move?.Invoke(context.ReadValue<Vector2>());
+    }
+
+    public void OnAim(InputAction.CallbackContext context)
+    {
+        Aim?.Invoke(context.performed);
     }
 }
